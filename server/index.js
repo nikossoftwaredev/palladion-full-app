@@ -1,9 +1,9 @@
 const express = require("express");
 const moment = require("moment");
 const cors = require("cors");
-const cron = require("node-cron");
 const { port } = require("./config");
 const { dateToCron } = require("./utils/general");
+const cron = require("node-cron");
 const { getClassId, makeReservation } = require("./utils/reservation");
 
 const app = express();
@@ -25,7 +25,6 @@ app.post("/getClassId", async (req, res) => {
     }
 
     const classId = await getClassId({ rsdate, time, type, previousSunday });
-    console.log({ classId });
     if (!classId) res.send({ error: "class not found" });
     else res.send({ classId });
   } catch (error) {
@@ -45,9 +44,9 @@ app.post("/reservation", async (req, res) => {
     });
 
     res.send({
-      message: `Reservation made`,
-      html,
+      message: `scheduledFor ${scheduledFor}, cronTab ${cronTab}`,
       error,
+      html,
     });
   } else {
     const date = moment(actualDate).format("YYYY-MM-DD");
@@ -59,15 +58,22 @@ app.post("/reservation", async (req, res) => {
     const cronTab = dateToCron(timeAndDate.toDate());
     const scheduledFor = moment(timeAndDate).format("DD/MM/YYYY HH:mm");
 
-    cron.schedule(cronTab, async () => {
-      await makeReservation({
-        classId,
-        email: encodeURIComponent(email),
-        rsdate,
-        time,
-        cronTab,
-      });
-    });
+    cron.schedule(
+      cronTab,
+      async () => {
+        await makeReservation({
+          classId,
+          email: encodeURIComponent(email),
+          rsdate,
+          time,
+          cronTab,
+        });
+      },
+      {
+        scheduled: true,
+        timezone: "Europe/Athens",
+      }
+    );
 
     res.send({
       message: `Res Scheduled for ${scheduledFor}`,
