@@ -1,3 +1,5 @@
-export const port = 4000;
-export const baseUrl = "https://palladiongym.hubit.gr/";
-export const endpoint = "reserve";
+const port = 4000;
+const baseUrl = "https://palladiongym.hubit.gr/";
+const endpoint = "reserve";
+
+module.exports = { port, baseUrl, endpoint };

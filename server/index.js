@@ -3,28 +3,37 @@ const moment = require("moment");
 const cors = require("cors");
 const cron = require("node-cron");
 const { port } = require("./config");
+const { dateToCron } = require("./utils/general");
+const { getClassId, makeReservation } = require("./utils/reservation");
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.get("/getClassId", async (req, res) => {
-  const { rsdate, time, type, previousSunday } = req.body;
+app.post("/getClassId", async (req, res) => {
+  try {
+    const { rsdate, time, type, previousSunday } = req.body;
 
-  if (!previousSunday || !rsdate || !time || !type)
-    res.send({
-      message: `${!previousSunday ? "previousSunday" : ""} ${
-        !rsdate ? "Date" : ""
-      } ${!time ? "Time" : ""} ${!type ? "Type" : ""} is required`,
-    });
+    if (!previousSunday || !rsdate || !time || !type) {
+      res.send({
+        message: `${!previousSunday ? "previousSunday" : ""} ${
+          !rsdate ? "Date" : ""
+        } ${!time ? "Time" : ""} ${!type ? "Type" : ""} is required`,
+      });
+    }
 
-  const classId = await getClassId({ rsdate, time, type, previousSunday });
-  if (!classId) res.send({ error: "class not found" });
-
-  res.send({ classId });
+    const classId = await getClassId({ rsdate, time, type, previousSunday });
+    console.log({ classId });
+    if (!classId) res.send({ error: "class not found" });
+    else res.send({ classId });
+  } catch (error) {
+    res.send({ error });
+  }
 });
 
-app.get("/reservation", async (req, res) => {
+app.post("/reservation", async (req, res) => {
   const { email, rsdate, time, classId, actualDate, executeNow } = req.body;
 
   if (executeNow) {

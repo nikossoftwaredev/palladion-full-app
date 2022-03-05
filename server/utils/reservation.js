@@ -1,8 +1,7 @@
-import { baseUrl, endpoint } from "../config";
-
 const axios = require("axios");
 const qs = require("qs");
 const cheerio = require("cheerio");
+const { baseUrl, endpoint } = require("../config");
 
 const seats = { cross: 3, weights: 60 };
 
@@ -12,7 +11,7 @@ const data = {
   option: "accept",
 };
 
-export const getClassId = async ({ rsdate, time, type, previousSunday }) => {
+const getClassId = async ({ rsdate, time, type, previousSunday }) => {
   // Scraping for class Id
   const dataToSend = qs.stringify({ monday: previousSunday, type: "next" });
 
@@ -34,7 +33,7 @@ export const getClassId = async ({ rsdate, time, type, previousSunday }) => {
   return id;
 };
 
-export const makeReservation = async ({ rsdate, time, email, classId }) => {
+const makeReservation = async ({ rsdate, time, email, classId }) => {
   const dataToSend = qs.stringify({ ...data, rsdate, time, email, classId });
   try {
     const response = await axios({
@@ -64,3 +63,5 @@ export const makeReservation = async ({ rsdate, time, email, classId }) => {
     return { error: e.message, html: "" };
   }
 };
+
+module.exports = { getClassId, makeReservation };

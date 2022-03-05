@@ -1,4 +1,4 @@
-export const dateToCron = (date) => {
+const dateToCron = (date) => {
   const minutes = date.getMinutes();
   const hours = date.getHours();
   const days = date.getDate();
@@ -7,3 +7,5 @@ export const dateToCron = (date) => {
 
   return `${minutes} ${hours} ${days} ${months} ${dayOfWeek}`;
 };
+
+exports.dateToCron = dateToCron;

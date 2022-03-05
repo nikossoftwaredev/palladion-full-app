@@ -22,6 +22,7 @@ import { isMailValid } from "../utils/general";
 import logo from "../assets/logo.png";
 import gym from "../assets/gym.gif";
 import axios from "axios";
+import { baseUrl } from "../config";
 
 interface InputFormData {
   email: string;
@@ -45,9 +46,6 @@ const ReservationPage = () => {
   const [error, setError] = useState("");
   const [html, setHtml] = useState("");
   const [willExecuteAt, setWillExecuteAt] = useState("");
-  const [count, setCount] = useState(0);
-
-  const timer = useRef<NodeJS.Timer>();
 
   const [formData, setFormData] = useState<InputFormData>(initFormData);
 
@@ -84,10 +82,7 @@ const ReservationPage = () => {
         actualDate: formData.rsdate.toISOString(),
       };
       localStorage.setItem("email", formData.email);
-      const response = await axios.post(
-        "https://us-central1-nikos-functions.cloudfunctions.net/reservation",
-        dataToSend
-      );
+      const response = await axios.post(`${baseUrl}/reservation`, dataToSend);
 
       const resHtml = response.data.html;
       if (resHtml) {
@@ -110,15 +105,12 @@ const ReservationPage = () => {
   useEffect(() => {
     handleChange("classId", "");
     axios
-      .post(
-        "https://us-central1-nikos-functions.cloudfunctions.net/getClassId",
-        {
-          time: formData.time,
-          type: formData.type,
-          rsdate: moment(formData.rsdate).format("DD/MM/YYYY"),
-          previousSunday,
-        }
-      )
+      .post(`${baseUrl}/getClassId`, {
+        time: formData.time,
+        type: formData.type,
+        rsdate: moment(formData.rsdate).format("DD/MM/YYYY"),
+        previousSunday,
+      })
       .then((response) => {
         const { data } = response;
 
@@ -145,15 +137,7 @@ const ReservationPage = () => {
     } else {
       setWillExecuteAt("");
     }
-  }, [formData.time, formData.rsdate, count]);
-
-  useEffect(() => {
-    timer.current = setInterval(() => {
-      setCount((prev) => prev + 1);
-    });
-
-    return clearInterval(timer.current);
-  }, []);
+  }, [formData.time, formData.rsdate]);
 
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
