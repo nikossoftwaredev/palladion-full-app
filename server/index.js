@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.post("/getClassId", async (req, res) => {
+app.post("/api/getClassId", async (req, res) => {
   try {
     const { rsdate, time, type, previousSunday } = req.body;
 
@@ -32,7 +32,7 @@ app.post("/getClassId", async (req, res) => {
   }
 });
 
-app.post("/reservation", async (req, res) => {
+app.post("/api/reservation", async (req, res) => {
   const { email, rsdate, time, classId, actualDate, executeNow } = req.body;
 
   if (executeNow) {
