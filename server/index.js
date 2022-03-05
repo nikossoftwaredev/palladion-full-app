@@ -75,6 +75,8 @@ app.post("/api/reservation", async (req, res) => {
       }
     );
 
+    console.log({ scheduledFor, email });
+
     res.send({
       message: `Res Scheduled for ${scheduledFor}`,
       cronTab,

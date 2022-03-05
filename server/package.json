@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "docker-deploy": "docker build -t palladion-script-api . && docker push palladion-script-api"
   },
   "author": "",
   "license": "ISC",
