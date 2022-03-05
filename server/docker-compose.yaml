@@ -1,0 +1,10 @@
+version: "3.5"
+
+services:
+  palladion-script-api:
+    container_name: palladion-script-api
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - 4000:4000
