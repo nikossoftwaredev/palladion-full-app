@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "docker-deploy": "docker build -t palladion-script-api . && docker push palladion-script-api"
+    "docker-deploy": "docker build -t nikosdim/palladion-script-api . && docker push nikosdim/palladion-script-api"
   },
   "author": "",
   "license": "ISC",
