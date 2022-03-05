@@ -116,7 +116,7 @@ const ReservationPage = () => {
 
         if (data.error) {
           setError(data.error);
-          handleChange("classId", "error");
+          handleChange("classId", "");
         } else {
           handleChange("classId", data.classId);
         }
