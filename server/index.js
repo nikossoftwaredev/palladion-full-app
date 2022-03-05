@@ -1,6 +1,7 @@
 const express = require("express");
 const moment = require("moment");
 const cors = require("cors");
+const morgan = require("morgan");
 const { port } = require("./config");
 const { dateToCron } = require("./utils/general");
 const cron = require("node-cron");
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(morgan("dev"));
 
 app.post("/api/getClassId", async (req, res) => {
   try {
