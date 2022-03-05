@@ -42,6 +42,7 @@ const initFormData: InputFormData = {
 
 const ReservationPage = () => {
   const [loading, setLoading] = useState(false);
+  const [fetchingClass, setFetchingClass] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [html, setHtml] = useState("");
@@ -104,6 +105,7 @@ const ReservationPage = () => {
 
   useEffect(() => {
     handleChange("classId", "");
+    setFetchingClass(true);
     axios
       .post(`${baseUrl}/getClassId`, {
         time: formData.time,
@@ -120,6 +122,7 @@ const ReservationPage = () => {
         } else {
           handleChange("classId", data.classId);
         }
+        setFetchingClass(false);
       });
   }, [formData.time, formData.type, formData.rsdate, previousSunday]);
 
@@ -223,7 +226,7 @@ const ReservationPage = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {!formData.classId ? (
+            {fetchingClass ? (
               <CircularProgress />
             ) : (
               <Typography>
