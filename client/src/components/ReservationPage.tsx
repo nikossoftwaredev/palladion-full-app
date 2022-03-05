@@ -122,8 +122,9 @@ const ReservationPage = () => {
         } else {
           handleChange("classId", data.classId);
         }
-        setFetchingClass(false);
-      });
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setFetchingClass(false));
   }, [formData.time, formData.type, formData.rsdate, previousSunday]);
 
   useEffect(() => {
