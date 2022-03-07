@@ -22,7 +22,7 @@ const Authentication = ({
     localStorage.getItem("passphrase") || ""
   );
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   const onConfirm = useCallback(() => {
     if (passphrase === "fat") {
