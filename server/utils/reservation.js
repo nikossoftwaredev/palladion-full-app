@@ -2,6 +2,7 @@ const axios = require("axios");
 const qs = require("qs");
 const cheerio = require("cheerio");
 const { baseUrl, endpoint } = require("../config");
+const moment = require("moment");
 
 const seats = { cross: 3, weights: 60 };
 
@@ -20,28 +21,33 @@ const getClassId = async ({
 }) => {
   // Scraping for class Id
 
-  const isSunday = moment(actualDate).isoWeekday("Sunday");
-  const dataToSend = qs.stringify({
-    monday: previousSunday,
-    type: isSunday ? "previous" : "next",
-  });
+  try {
+    const dayOfWeek = moment(actualDate).weekday();
 
-  const { data } = await axios({
-    method: "post",
-    url: `${baseUrl}mainSchedule`,
-    data: dataToSend,
-  });
+    const dataToSend = qs.stringify({
+      monday: previousSunday,
+      type: dayOfWeek === 1 ? "previous" : "next",
+    });
 
-  const $ = cheerio.load(data);
+    const { data } = await axios({
+      method: "post",
+      url: `${baseUrl}mainSchedule`,
+      data: dataToSend,
+    });
 
-  const numberOfSeats = seats[type];
-  const aTag = $(
-    `[scheduledate=${rsdate}][scheduletime=${time}][scheduleseats=${numberOfSeats}]`
-  );
+    const $ = cheerio.load(data);
 
-  const id = aTag.attr("id");
+    const numberOfSeats = seats[type];
+    const aTag = $(
+      `[scheduledate=${rsdate}][scheduletime=${time}][scheduleseats=${numberOfSeats}]`
+    );
 
-  return id;
+    const id = aTag.attr("id");
+
+    return id;
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
 const makeReservation = async ({ rsdate, time, email, classId }) => {
