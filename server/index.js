@@ -16,7 +16,7 @@ app.use(morgan("dev"));
 
 app.post("/api/getClassId", async (req, res) => {
   try {
-    const { rsdate, time, type, previousSunday } = req.body;
+    const { rsdate, time, type, previousSunday, actualDate } = req.body;
 
     if (!previousSunday || !rsdate || !time || !type) {
       res.send({
@@ -26,7 +26,13 @@ app.post("/api/getClassId", async (req, res) => {
       });
     }
 
-    const classId = await getClassId({ rsdate, time, type, previousSunday });
+    const classId = await getClassId({
+      rsdate,
+      time,
+      type,
+      previousSunday,
+      actualDate,
+    });
     if (!classId) res.send({ error: "class not found" });
     else res.send({ classId });
   } catch (error) {
@@ -55,7 +61,7 @@ app.post("/api/reservation", async (req, res) => {
 
     const timeAndDate = moment(`${date} ${time}`);
 
-    timeAndDate.subtract("1", "day").subtract("2", "minutes");
+    timeAndDate.subtract("1", "day").subtract("1", "minutes");
 
     const cronTab = dateToCron(timeAndDate.toDate());
     const scheduledFor = moment(timeAndDate).format("DD/MM/YYYY HH:mm");

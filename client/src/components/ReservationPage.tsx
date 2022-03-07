@@ -111,6 +111,7 @@ const ReservationPage = () => {
         time: formData.time,
         type: formData.type,
         rsdate: moment(formData.rsdate).format("DD/MM/YYYY"),
+        actualDate: formData.rsdate,
         previousSunday,
       })
       .then((response) => {
@@ -132,7 +133,7 @@ const ReservationPage = () => {
     const time = formData.time;
 
     const timeAndDate = moment(`${date} ${time}`);
-    timeAndDate.subtract("1", "day").subtract("2", "minutes");
+    timeAndDate.subtract("1", "day").subtract("1", "minutes");
 
     const currentDate = new Date();
 

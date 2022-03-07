@@ -11,9 +11,20 @@ const data = {
   option: "accept",
 };
 
-const getClassId = async ({ rsdate, time, type, previousSunday }) => {
+const getClassId = async ({
+  rsdate,
+  time,
+  type,
+  previousSunday,
+  actualDate,
+}) => {
   // Scraping for class Id
-  const dataToSend = qs.stringify({ monday: previousSunday, type: "next" });
+
+  const isSunday = moment(actualDate).isoWeekday("Sunday");
+  const dataToSend = qs.stringify({
+    monday: previousSunday,
+    type: isSunday ? "previous" : "next",
+  });
 
   const { data } = await axios({
     method: "post",
