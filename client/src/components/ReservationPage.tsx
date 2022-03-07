@@ -45,7 +45,6 @@ const ReservationPage = () => {
   const [fetchingClass, setFetchingClass] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [html, setHtml] = useState("");
   const [willExecuteAt, setWillExecuteAt] = useState("");
 
   const [formData, setFormData] = useState<InputFormData>(initFormData);
@@ -74,7 +73,6 @@ const ReservationPage = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    setHtml("");
     try {
       const dataToSend = {
         ...formData,
@@ -83,14 +81,8 @@ const ReservationPage = () => {
         actualDate: formData.rsdate.toISOString(),
       };
       localStorage.setItem("email", formData.email);
-      const response = await axios.post(`${baseUrl}/reservation`, dataToSend);
+      await axios.post(`${baseUrl}/reservation`, dataToSend);
 
-      const resHtml = response.data.html;
-      if (resHtml) {
-        const indexHtml = resHtml.indexOf("<strong>Περ");
-        resHtml.slice(0, indexHtml);
-        setHtml(resHtml.slice(0, indexHtml));
-      }
       setSuccess(true);
     } catch (e) {
       setError((e as Error).message as string);
@@ -147,10 +139,6 @@ const ReservationPage = () => {
   return (
     <LocalizationProvider dateAdapter={DateAdapter}>
       {loading && <Loader />}
-      <div
-        style={{ width: "400px" }}
-        dangerouslySetInnerHTML={{ __html: html }}
-      ></div>
       <Stack direction="row" spacing={3} justifyContent="center">
         <Stack spacing={2} justifyContent="center" alignItems="center">
           <img
@@ -158,7 +146,9 @@ const ReservationPage = () => {
             style={{ borderRadius: "10px", height: "50px", width: "50px" }}
             src={logo}
           />
-          <Typography variant="h4">Make Reservation</Typography>
+          <Typography color="textPrimary" variant="h4">
+            Make Reservation
+          </Typography>
           <img
             alt="gymgif"
             style={{ borderRadius: "10px", height: "200px", width: "100%" }}
@@ -231,7 +221,7 @@ const ReservationPage = () => {
             {fetchingClass ? (
               <CircularProgress />
             ) : (
-              <Typography>
+              <Typography color="textPrimary">
                 Execute: {willExecuteAt ? `at ${willExecuteAt}` : "now"}
               </Typography>
             )}
