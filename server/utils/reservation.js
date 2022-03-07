@@ -26,7 +26,7 @@ const getClassId = async ({
 
     const dataToSend = qs.stringify({
       monday: previousSunday,
-      type: dayOfWeek === 1 ? "previous" : "next",
+      type: dayOfWeek === 0 ? "previous" : "next",
     });
 
     const { data } = await axios({
@@ -47,6 +47,7 @@ const getClassId = async ({
     return id;
   } catch (error) {
     console.log({ error });
+    return "";
   }
 };
 
