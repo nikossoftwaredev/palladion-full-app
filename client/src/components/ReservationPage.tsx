@@ -74,11 +74,13 @@ const ReservationPage = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
+      const DATE_RFC2822 = "ddd, DD MMM YYYY HH:mm:ss [GMT]";
+
       const dataToSend = {
         ...formData,
         rsdate: moment(formData.rsdate).format("DD/MM/YYYY"),
         executeNow: !willExecuteAt,
-        actualDate: formData.rsdate.toISOString(),
+        actualDate: moment(formData.rsdate).utc().format(DATE_RFC2822),
       };
       localStorage.setItem("email", formData.email);
       await axios.post(`${baseUrl}/reservation`, dataToSend);
