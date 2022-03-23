@@ -43,52 +43,60 @@ app.post("/api/getClassId", async (req, res) => {
 app.post("/api/reservation", async (req, res) => {
   const { email, rsdate, time, classId, actualDate, executeNow } = req.body;
 
-  if (executeNow) {
-    const { html, error } = await makeReservation({
-      classId,
-      email,
-      rsdate,
-      time,
-    });
+  try {
+    if (executeNow) {
+      const { html, error } = await makeReservation({
+        classId,
+        email,
+        rsdate,
+        time,
+      });
 
-    res.send({
-      message: `scheduledFor ${scheduledFor}, cronTab ${cronTab}`,
-      error,
-      html,
-    });
-  } else {
-    const date = moment(actualDate).format("YYYY-MM-DD");
+      res.send({
+        message: `scheduledFor ${scheduledFor}, cronTab ${cronTab}`,
+        error,
+        html,
+      });
+    } else {
+      const date = moment(actualDate).format("YYYY-MM-DD");
 
-    const timeAndDate = moment(`${date} ${time}`);
+      const timeAndDate = moment(`${date} ${time}`);
 
-    timeAndDate.subtract("1", "day").subtract("1", "minutes");
+      timeAndDate.subtract("1", "day").subtract("1", "minutes");
 
-    const cronTab = dateToCron(timeAndDate.toDate());
-    const scheduledFor = moment(timeAndDate).format("DD/MM/YYYY HH:mm");
+      const cronTab = dateToCron(timeAndDate.toDate());
+      const scheduledFor = moment(timeAndDate).format("DD/MM/YYYY HH:mm");
 
-    cron.schedule(
-      cronTab,
-      async () => {
-        await makeReservation({
-          classId,
-          email: encodeURIComponent(email),
-          rsdate,
-          time,
-          cronTab,
-        });
-      },
-      {
-        scheduled: true,
-        timezone: "Europe/Athens",
-      }
-    );
+      cron.schedule(
+        cronTab,
+        async () => {
+          try {
+            await makeReservation({
+              classId,
+              email: encodeURIComponent(email),
+              rsdate,
+              time,
+              cronTab,
+            });
+          } catch (e) {
+            console.log("error" + e.message);
+          }
+        },
+        {
+          scheduled: true,
+          timezone: "Europe/Athens",
+        }
+      );
 
-    console.log({ scheduledFor, email });
+      console.log({ scheduledFor, email, classId, actualDate: timeAndDate });
 
-    res.send({
-      message: `Res Scheduled for ${scheduledFor}`,
-      cronTab,
-    });
+      res.send({
+        message: `Res Scheduled for ${scheduledFor}`,
+        cronTab,
+      });
+    }
+  } catch (e) {
+    res.send({ error: e.message, message: "error" });
   }
 });
 
