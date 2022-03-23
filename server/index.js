@@ -1,5 +1,4 @@
 const express = require("express");
-const moment = require("moment");
 const cors = require("cors");
 const morgan = require("morgan");
 const { port } = require("./config");
@@ -41,7 +40,7 @@ app.post("/api/getClassId", async (req, res) => {
 });
 
 app.post("/api/reservation", async (req, res) => {
-  const { email, rsdate, time, classId, actualDate, executeNow } = req.body;
+  const { email, rsdate, time, classId, executeNow, cronTab } = req.body;
 
   try {
     if (executeNow) {
@@ -53,20 +52,10 @@ app.post("/api/reservation", async (req, res) => {
       });
 
       res.send({
-        message: `scheduledFor ${scheduledFor}, cronTab ${cronTab}`,
         error,
         html,
       });
     } else {
-      const date = moment(actualDate).format("YYYY-MM-DD");
-
-      const timeAndDate = moment(`${date} ${time}`);
-
-      timeAndDate.subtract("1", "day").subtract("1", "minutes");
-
-      const cronTab = dateToCron(timeAndDate.toDate());
-      const scheduledFor = moment(timeAndDate).format("DD/MM/YYYY HH:mm");
-
       cron.schedule(
         cronTab,
         async () => {
@@ -88,15 +77,15 @@ app.post("/api/reservation", async (req, res) => {
         }
       );
 
-      console.log({ scheduledFor, email, classId, date, time });
-
+      console.log({ email, classId, time, cronTab });
       res.send({
-        message: `Res Scheduled for ${scheduledFor}`,
+        message: `Res Scheduled for ${cronTab}`,
         cronTab,
       });
     }
   } catch (e) {
-    res.send({ error: e.message, message: "error" });
+    console.log(e);
+    res.send(e);
   }
 });
 

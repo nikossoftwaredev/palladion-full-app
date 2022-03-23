@@ -23,6 +23,7 @@ import logo from "../assets/logo.png";
 import gym from "../assets/gym.gif";
 import axios from "axios";
 import { baseUrl } from "../config";
+import { dateToCron } from "../utils/date";
 
 interface InputFormData {
   email: string;
@@ -46,6 +47,7 @@ const ReservationPage = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [willExecuteAt, setWillExecuteAt] = useState("");
+  const [cronTab, setCronTab] = useState("");
 
   const [formData, setFormData] = useState<InputFormData>(initFormData);
 
@@ -74,13 +76,11 @@ const ReservationPage = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const DATE_RFC2822 = "ddd, DD MMM YYYY HH:mm:ss [GMT]";
-
       const dataToSend = {
         ...formData,
         rsdate: moment(formData.rsdate).format("DD/MM/YYYY"),
         executeNow: !willExecuteAt,
-        actualDate: moment(formData.rsdate).utc().format(DATE_RFC2822),
+        cronTab,
       };
       localStorage.setItem("email", formData.email);
       await axios.post(`${baseUrl}/reservation`, dataToSend);
@@ -132,8 +132,11 @@ const ReservationPage = () => {
     const currentDate = new Date();
 
     if (timeAndDate.diff(moment(currentDate)) > 0) {
+      setCronTab(dateToCron(timeAndDate.toDate()));
       setWillExecuteAt(moment(timeAndDate).format("DD/MM/YYYY HH:mm"));
     } else {
+      setCronTab("");
+
       setWillExecuteAt("");
     }
   }, [formData.time, formData.rsdate]);
