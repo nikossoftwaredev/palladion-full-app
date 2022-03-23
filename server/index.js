@@ -88,7 +88,7 @@ app.post("/api/reservation", async (req, res) => {
         }
       );
 
-      console.log({ scheduledFor, email, classId, actualDate: timeAndDate });
+      console.log({ scheduledFor, email, classId, date, time });
 
       res.send({
         message: `Res Scheduled for ${scheduledFor}`,
